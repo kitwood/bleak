@@ -271,7 +271,7 @@ class BleakClientDotNet(BaseBleakClient):
             self._disconnect_events.append(event)
             try:
                 self._requester.Dispose()
-                await asyncio.wait_for(event.wait(), timeout=20)
+                await asyncio.wait_for(event.wait(), timeout=10)
             finally:
                 self._disconnect_events.remove(event)
 
@@ -435,8 +435,9 @@ class BleakClientDotNet(BaseBleakClient):
                     ),
                     return_type=GattCharacteristicsResult,
                 )
-                self.services.add_service(BleakGATTServiceDotNet(service))
-                if characteristics_result.Status != GattCommunicationStatus.Success:
+                if characteristics_result.Status == GattCommunicationStatus.Success:
+                    self.services.add_service(BleakGATTServiceDotNet(service))
+                else:
                     if (
                         characteristics_result.Status
                         == GattCommunicationStatus.AccessDenied
