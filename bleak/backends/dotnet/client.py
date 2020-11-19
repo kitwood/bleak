@@ -271,7 +271,7 @@ class BleakClientDotNet(BaseBleakClient):
             self._disconnect_events.append(event)
             try:
                 self._requester.Dispose()
-                await asyncio.wait_for(event.wait(), timeout=10)
+                await asyncio.wait_for(event.wait(), timeout=20)
             finally:
                 self._disconnect_events.remove(event)
 
