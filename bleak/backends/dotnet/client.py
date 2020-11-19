@@ -27,7 +27,6 @@ from bleak.backends.dotnet.service import BleakGATTServiceDotNet
 from bleak.backends.dotnet.characteristic import BleakGATTCharacteristicDotNet
 from bleak.backends.dotnet.descriptor import BleakGATTDescriptorDotNet
 
-
 # CLR imports
 # Import of Bleak CLR->UWP Bridge.
 import BleakBridge  # noqa: F401
@@ -115,7 +114,7 @@ class BleakClientDotNet(BaseBleakClient):
         self._address_type = (
             kwargs["address_type"]
             if "address_type" in kwargs
-            and kwargs["address_type"] in ("public", "random")
+               and kwargs["address_type"] in ("public", "random")
             else None
         )
 
@@ -439,6 +438,12 @@ class BleakClientDotNet(BaseBleakClient):
                 self.services.add_service(BleakGATTServiceDotNet(service))
                 if characteristics_result.Status != GattCommunicationStatus.Success:
                     if (
+                        characteristics_result.Status
+                        == GattCommunicationStatus.AccessDenied
+                    ):
+                        # This can happen when accessing HID over GATT services
+                        continue
+                    elif (
                         characteristics_result.Status
                         == GattCommunicationStatus.ProtocolError
                     ):
